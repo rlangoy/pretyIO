@@ -1,16 +1,29 @@
 import 'package:flutter/material.dart';
 import 'screens/errors/no_connection.dart';
 import 'screens/login/login_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MqttLoginInfo {
+  MqttLoginInfo() {
+    //Update local var from local store
+    SharedPreferences.getInstance().then((res) {
+      serverAddress = res.getString("serverAddress")!;
+      userName = res.getString("userName")!;
+      userPassword = res.getString("userPassword")!;
+    });
+  }
+
   String serverAddress = "";
   String userName = "";
   String userPassword = "";
 
+  //Update local var and store values locally
   void update({String? serverAddress, String? userName, String? userPassword}) {
-    this.serverAddress = serverAddress!;
-    this.userName = userName!;
-    this.userPassword = userPassword!;
+    SharedPreferences.getInstance().then((res) {
+      res.setString("serverAddress", this.serverAddress = serverAddress!);
+      res.setString("userName", this.userName = userName!);
+      res.setString("userPassword", this.userPassword = userPassword!);
+    });
   }
 
   bool get isEmpty {
@@ -28,6 +41,7 @@ class MqttLoginInfo {
 
 void main() {
   MqttLoginInfo loginInfo = MqttLoginInfo();
+
   runApp(MyApp(loginInfo: loginInfo));
 }
 
@@ -37,7 +51,7 @@ class MyApp extends StatelessWidget {
   MqttLoginInfo? loginInfo;
 
   void onLoginBtn() {
-    print("Login button pushed");
+    //print("Login button pushed");
   }
 
   // This widget is the root of your application.

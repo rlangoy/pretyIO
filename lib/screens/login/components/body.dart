@@ -49,20 +49,40 @@ class ButtonFieldContainer extends StatelessWidget {
   }
 }
 
-class Body extends StatelessWidget {
+class Body extends StatefulWidget {
+  // ignore: prefer_typing_uninitialized_variables
+  var loginInfo;
+  Function? onLoginBtn;
+
   Body({
     Key? key,
     this.loginInfo,
     this.onLoginBtn,
   }) : super(key: key);
 
+  @override
+  State<Body> createState() =>
+      // ignore: no_logic_in_create_state
+      _Body(loginInfo: loginInfo, onLoginBtn: onLoginBtn);
+}
+
+class _Body extends State<Body> {
+  // ignore: prefer_typing_uninitialized_variables
+  var loginInfo;
   Function? onLoginBtn;
 
   TextEditingController ctrlMqttServer = TextEditingController();
   TextEditingController ctrlUserName = TextEditingController();
   TextEditingController ctrlUserPassword = TextEditingController();
 
-  var loginInfo;
+  _Body({this.loginInfo, this.onLoginBtn}) {
+    ctrlMqttServer.text = loginInfo.serverAddress;
+    ctrlUserName.text = loginInfo.userName;
+    ctrlUserPassword.text = loginInfo.userPassword;
+  }
+
+  //MqttLoginInfo loginInfo;
+  bool _obscureText = true;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -102,8 +122,20 @@ class Body extends StatelessWidget {
             )),
             TextFieldContainer(
                 child: TextField(
+              obscureText: _obscureText,
               controller: ctrlUserPassword,
               decoration: InputDecoration(
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureText ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureText = !_obscureText;
+                      });
+                    }, //_togglePasswordStatus,
+                    color: Colors.grey[800],
+                  ),
                   icon: const Icon(Icons.lock),
                   hintStyle: TextStyle(color: Colors.grey[800]),
                   hintText: "Password",
