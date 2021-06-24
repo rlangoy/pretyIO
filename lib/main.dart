@@ -2,13 +2,39 @@ import 'package:flutter/material.dart';
 import 'screens/errors/no_connection.dart';
 import 'screens/login/login_screen.dart';
 
-void main() {
-  runApp(const MyApp());
+class MqttLoginInfo {
+  String serverAddress = "";
+  String userName = "";
+  String userPassword = "";
+
+  void update({String? serverAddress, String? userName, String? userPassword}) {
+    this.serverAddress = serverAddress!;
+    this.userName = userName!;
+    this.userPassword = userPassword!;
+  }
+
+  bool get isEmpty {
+    bool ret = false;
+
+    if (serverAddress.isEmpty || userName.isEmpty || userPassword.isEmpty) {
+      ret = false;
+    } else {
+      ret = true;
+    }
+
+    return ret;
+  }
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+void main() {
+  MqttLoginInfo loginInfo = MqttLoginInfo();
+  runApp(MyApp(loginInfo: loginInfo));
+}
 
+// ignore: must_be_immutable
+class MyApp extends StatelessWidget {
+  MyApp({Key? key, this.loginInfo}) : super(key: key);
+  MqttLoginInfo? loginInfo;
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -27,7 +53,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       //home: const NoConnectionScreen(msgHeader: 'Sorry!..'),
-      home: LoginScreen(),
+      home: LoginScreen(loginInfo: loginInfo),
       //const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
