@@ -50,10 +50,16 @@ class ButtonFieldContainer extends StatelessWidget {
 }
 
 class Body extends StatelessWidget {
-  const Body({
+  Body({
     Key? key,
+    this.loginInfo,
   }) : super(key: key);
 
+  TextEditingController ctrlMqttServer = TextEditingController();
+  TextEditingController ctrlUserName = TextEditingController();
+  TextEditingController ctrlUserPassword = TextEditingController();
+
+  var loginInfo;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -64,7 +70,7 @@ class Body extends StatelessWidget {
           children: <Widget>[
             Text(
               "LOGIN",
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: size.height * 0.03),
             SvgPicture.asset(
@@ -74,8 +80,8 @@ class Body extends StatelessWidget {
             SizedBox(height: size.height * 0.03),
             TextFieldContainer(
                 child: TextField(
+              controller: ctrlMqttServer,
               decoration: InputDecoration(
-                //filled: true,
                 icon: const Icon(Icons.link_rounded),
                 hintStyle: TextStyle(color: Colors.grey[800]),
                 hintText: "MQTT Server Address",
@@ -84,8 +90,8 @@ class Body extends StatelessWidget {
             )),
             TextFieldContainer(
                 child: TextField(
+              controller: ctrlUserName,
               decoration: InputDecoration(
-                  // filled: true,
                   icon: const Icon(Icons.person),
                   hintStyle: TextStyle(color: Colors.grey[800]),
                   hintText: "User name",
@@ -93,8 +99,8 @@ class Body extends StatelessWidget {
             )),
             TextFieldContainer(
                 child: TextField(
+              controller: ctrlUserPassword,
               decoration: InputDecoration(
-                  // filled: true,
                   icon: const Icon(Icons.lock),
                   hintStyle: TextStyle(color: Colors.grey[800]),
                   hintText: "Password",
@@ -105,11 +111,15 @@ class Body extends StatelessWidget {
             ButtonFieldContainer(
                 child: TextButton(
               style: TextButton.styleFrom(
-                  // backgroundColor: Colors.purple.shade200,
                   primary: Colors.white,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(50))),
-              onPressed: () {},
+              onPressed: () {
+                loginInfo.update(
+                    serverAddress: ctrlMqttServer.text,
+                    userName: ctrlUserName.text,
+                    userPassword: ctrlUserPassword.text);
+              },
               child: Text("LOGIN".toUpperCase()),
             )),
             //SizedBox(height: size.height * 0.03),
