@@ -35,6 +35,11 @@ void main() {
 class MyApp extends StatelessWidget {
   MyApp({Key? key, this.loginInfo}) : super(key: key);
   MqttLoginInfo? loginInfo;
+
+  void onLoginBtn() {
+    print("Login button pushed");
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -53,7 +58,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       //home: const NoConnectionScreen(msgHeader: 'Sorry!..'),
-      home: LoginScreen(loginInfo: loginInfo),
+      home: LoginScreen(loginInfo: loginInfo, onLoginBtn: onLoginBtn),
       //const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }

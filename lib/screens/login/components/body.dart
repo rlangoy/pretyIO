@@ -53,7 +53,10 @@ class Body extends StatelessWidget {
   Body({
     Key? key,
     this.loginInfo,
+    this.onLoginBtn,
   }) : super(key: key);
+
+  Function? onLoginBtn;
 
   TextEditingController ctrlMqttServer = TextEditingController();
   TextEditingController ctrlUserName = TextEditingController();
@@ -119,6 +122,7 @@ class Body extends StatelessWidget {
                     serverAddress: ctrlMqttServer.text,
                     userName: ctrlUserName.text,
                     userPassword: ctrlUserPassword.text);
+                onLoginBtn!(); // Notify that login was pressed
               },
               child: Text("LOGIN".toUpperCase()),
             )),

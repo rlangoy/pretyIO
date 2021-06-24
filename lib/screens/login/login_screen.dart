@@ -4,13 +4,14 @@ import 'components/body.dart';
 
 class LoginScreen extends StatelessWidget {
   var loginInfo;
+  Function? onLoginBtn;
 
-  LoginScreen({this.loginInfo});
+  LoginScreen({this.loginInfo, this.onLoginBtn});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Body(loginInfo: loginInfo),
+      body: Body(loginInfo: loginInfo, onLoginBtn: onLoginBtn),
     );
   }
 }
