@@ -64,9 +64,10 @@ class MqttLoginInfo {
   }
 }
 
-void main() {
+//---
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   MqttLoginInfo loginInfo = MqttLoginInfo();
-
   runApp(MyApp(loginInfo: loginInfo));
 }
 
