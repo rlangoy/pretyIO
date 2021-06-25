@@ -46,7 +46,7 @@ class MqttLoginInfo {
 class MqClient {
   MqClient(this._loginInfo);
 
-  MqttLoginInfo? _loginInfo;
+  final MqttLoginInfo? _loginInfo;
   MqttServerClient? client;
 
   /// The subscribed callback
