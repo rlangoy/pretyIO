@@ -76,9 +76,12 @@ class _Body extends State<Body> {
   TextEditingController ctrlUserPassword = TextEditingController();
 
   _Body({this.loginInfo, this.onLoginBtn}) {
-    ctrlMqttServer.text = loginInfo.serverAddress;
-    ctrlUserName.text = loginInfo.userName;
-    ctrlUserPassword.text = loginInfo.userPassword;
+    //Get data from storage and update UX when loaded
+    loginInfo.loadFromLocalStorage().then((_) {
+      ctrlMqttServer.text = loginInfo.serverAddress;
+      ctrlUserName.text = loginInfo.userName;
+      ctrlUserPassword.text = loginInfo.userPassword;
+    });
   }
 
   //MqttLoginInfo loginInfo;
@@ -150,11 +153,10 @@ class _Body extends State<Body> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(50))),
               onPressed: () {
-                loginInfo.update(
-                    serverAddress: ctrlMqttServer.text,
-                    userName: ctrlUserName.text,
-                    userPassword: ctrlUserPassword.text);
-                onLoginBtn!(); // Notify that login was pressed
+                //Update and store the info
+                loginInfo.serverAddress = ctrlMqttServer.text;
+                loginInfo.userName = ctrlUserName.text;
+                loginInfo.userPassword = ctrlUserPassword.text;
               },
               child: Text("LOGIN".toUpperCase()),
             )),

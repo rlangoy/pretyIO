@@ -4,25 +4,50 @@ import 'screens/login/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MqttLoginInfo {
-  MqttLoginInfo() {
-    //Update local var from local store
+  MqttLoginInfo();
+
+  //Loads data from storage
+  Future<void> loadFromLocalStorage() async {
+    final SharedPreferences prefs = await _prefs;
+    _serverAddress = (prefs.getString('serverAddress') ?? "");
+    _userName = (prefs.getString('userName') ?? "");
+    _userPassword = (prefs.getString('userPassword') ?? "");
+  }
+
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
+  String _serverAddress = "";
+  String _userName = "";
+  String _userPassword = "";
+
+  String get serverAddress {
+    return _serverAddress;
+  }
+
+  String get userName {
+    return _userName;
+  }
+
+  String get userPassword {
+    return _userPassword;
+  }
+
+  // Stores data loacay and persistant
+  set serverAddress(String serverAddress) {
     SharedPreferences.getInstance().then((res) {
-      serverAddress = res.getString("serverAddress")!;
-      userName = res.getString("userName")!;
-      userPassword = res.getString("userPassword")!;
+      res.setString("serverAddress", _serverAddress = serverAddress);
     });
   }
 
-  String serverAddress = "";
-  String userName = "";
-  String userPassword = "";
-
-  //Update local var and store values locally
-  void update({String? serverAddress, String? userName, String? userPassword}) {
+  set userName(String userName) {
     SharedPreferences.getInstance().then((res) {
-      res.setString("serverAddress", this.serverAddress = serverAddress!);
-      res.setString("userName", this.userName = userName!);
-      res.setString("userPassword", this.userPassword = userPassword!);
+      res.setString("userName", _userName = userName);
+    });
+  }
+
+  set userPassword(String userPassword) {
+    SharedPreferences.getInstance().then((res) {
+      res.setString("userPassword", _userPassword = userPassword);
     });
   }
 
