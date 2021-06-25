@@ -49,6 +49,7 @@ class ButtonFieldContainer extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class Body extends StatefulWidget {
   // ignore: prefer_typing_uninitialized_variables
   var loginInfo;
@@ -81,6 +82,11 @@ class _Body extends State<Body> {
       ctrlMqttServer.text = loginInfo.serverAddress;
       ctrlUserName.text = loginInfo.userName;
       ctrlUserPassword.text = loginInfo.userPassword;
+    }).catchError((e) {
+      //No data found in storage
+      ctrlMqttServer.text = "";
+      ctrlUserName.text = "";
+      ctrlUserPassword.text = "";
     });
   }
 
@@ -160,6 +166,7 @@ class _Body extends State<Body> {
               },
               child: Text("LOGIN".toUpperCase()),
             )),
+
             //SizedBox(height: size.height * 0.03),
           ],
         ),
