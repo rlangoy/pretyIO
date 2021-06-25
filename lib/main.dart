@@ -91,30 +91,6 @@ class MqClient {
             {print("---------------Connected----------------------")})
         .onError((error, stackTrace) =>
             {print("---------------Error Connecing----------------------")});
-
-/*
-    client!.logging(on: false);
-    client!.keepAlivePeriod = 20;
-    client!.onDisconnected = onDisconnected;
-    client!.onSubscribed = onSubscribed;
-    final connMess = MqttConnectMessage()
-        .withClientIdentifier('Mqtt_MyClientUniqueIdQ1')
-        .authenticateAs(_loginInfo!.userName,
-            _loginInfo!._userPassword) //"usn", "student2021")
-        .withWillTopic(
-            'willtopic') // If you set this you must set a will message
-        .withWillMessage('My Will message')
-        .startClean() // Non persistent session for testing
-        .withWillQos(MqttQos.atLeastOnce);
-
-    print('EXAMPLE::Mosquitto client connecting....');
-    await client!
-        .connect()
-        .then((value) =>
-            {print("---------------Connected----------------------")})
-        .onError((error, stackTrace) =>
-            {print("---------------Error Connecing----------------------")});
-*/
   }
 }
 
