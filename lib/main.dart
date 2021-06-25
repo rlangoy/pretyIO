@@ -2,54 +2,33 @@ import 'package:flutter/material.dart';
 import 'screens/errors/no_connection.dart';
 import 'screens/login/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mqtt_client/mqtt_client.dart';
+import 'package:mqtt_client/mqtt_server_client.dart';
 
 class MqttLoginInfo {
   MqttLoginInfo();
 
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
   //Loads data from storage
   Future<void> loadFromLocalStorage() async {
     final SharedPreferences prefs = await _prefs;
-    _serverAddress = (prefs.getString('serverAddress') ?? "");
-    _userName = (prefs.getString('userName') ?? "");
-    _userPassword = (prefs.getString('userPassword') ?? "");
+    serverAddress = (prefs.getString('serverAddress') ?? "");
+    userName = (prefs.getString('userName') ?? "");
+    userPassword = (prefs.getString('userPassword') ?? "");
   }
 
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-
-  String _serverAddress = "";
-  String _userName = "";
-  String _userPassword = "";
-
-  String get serverAddress {
-    return _serverAddress;
+  //Saves data in local storage
+  Future<void> saveToLocalStorage() async {
+    final SharedPreferences prefs = await _prefs;
+    prefs.setString("serverAddress", serverAddress);
+    prefs.setString("userName", userName);
+    prefs.setString("userPassword", userPassword);
   }
 
-  String get userName {
-    return _userName;
-  }
-
-  String get userPassword {
-    return _userPassword;
-  }
-
-  // Stores data loacay and persistant
-  set serverAddress(String serverAddress) {
-    SharedPreferences.getInstance().then((res) {
-      res.setString("serverAddress", _serverAddress = serverAddress);
-    });
-  }
-
-  set userName(String userName) {
-    SharedPreferences.getInstance().then((res) {
-      res.setString("userName", _userName = userName);
-    });
-  }
-
-  set userPassword(String userPassword) {
-    SharedPreferences.getInstance().then((res) {
-      res.setString("userPassword", _userPassword = userPassword);
-    });
-  }
+  String serverAddress = "";
+  String userName = "";
+  String userPassword = "";
 
   bool get isEmpty {
     bool ret = false;
@@ -64,6 +43,81 @@ class MqttLoginInfo {
   }
 }
 
+class MqClient {
+  MqClient(this._loginInfo);
+
+  MqttLoginInfo? _loginInfo;
+  MqttServerClient? client;
+
+  /// The subscribed callback
+  void onSubscribed(String topic) {
+    print('EXAMPLE::Subscription confirmed for topic $topic');
+  }
+
+  /// The unsolicited disconnect callback
+  void onDisconnected() {
+    print('EXAMPLE::OnDisconnected client callback - Client disconnection');
+  }
+
+  Future<void> connect() async {
+    client = MqttServerClient(_loginInfo!.serverAddress, '');
+    client!.secure = true; // Set secure working
+    client!.port = 8883; // SSL Port
+
+    client!.logging(on: false);
+    client!.keepAlivePeriod = 20;
+    client!.onDisconnected = onDisconnected;
+    client!.onSubscribed = onSubscribed;
+
+    if (client!.connectionStatus!.state == MqttConnectionState.connected) {
+      client!.disconnect();
+    }
+    String user = _loginInfo!.userName.toString();
+    print("Hei :::::::::::   $user");
+    final connMess = MqttConnectMessage()
+        .withClientIdentifier('Mqtt_MyClientUniqueIdQ1')
+        .authenticateAs(_loginInfo!.userName, _loginInfo!.userPassword)
+        .withWillTopic(
+            'willtopic') // If you set this you must set a will message
+        .withWillMessage('My Will message')
+        .startClean() // Non persistent session for testing
+        .withWillQos(MqttQos.atLeastOnce);
+    print('EXAMPLE::Mosquitto client connecting....');
+    client!.connectionMessage = connMess;
+
+    await client!
+        .connect()
+        .then((value) =>
+            {print("---------------Connected----------------------")})
+        .onError((error, stackTrace) =>
+            {print("---------------Error Connecing----------------------")});
+
+/*
+    client!.logging(on: false);
+    client!.keepAlivePeriod = 20;
+    client!.onDisconnected = onDisconnected;
+    client!.onSubscribed = onSubscribed;
+    final connMess = MqttConnectMessage()
+        .withClientIdentifier('Mqtt_MyClientUniqueIdQ1')
+        .authenticateAs(_loginInfo!.userName,
+            _loginInfo!._userPassword) //"usn", "student2021")
+        .withWillTopic(
+            'willtopic') // If you set this you must set a will message
+        .withWillMessage('My Will message')
+        .startClean() // Non persistent session for testing
+        .withWillQos(MqttQos.atLeastOnce);
+
+    print('EXAMPLE::Mosquitto client connecting....');
+    await client!
+        .connect()
+        .then((value) =>
+            {print("---------------Connected----------------------")})
+        .onError((error, stackTrace) =>
+            {print("---------------Error Connecing----------------------")});
+*/
+  }
+}
+
 //---
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -75,9 +129,13 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   MyApp({Key? key, this.loginInfo}) : super(key: key);
   MqttLoginInfo? loginInfo;
+  MqClient? mqClient;
 
   void onLoginBtn() {
-    //print("Login button pushed");
+    print("Login button pushed");
+    mqClient = MqClient(loginInfo);
+    mqClient!.connect();
+    // async mqClient.connect();
   }
 
   // This widget is the root of your application.
@@ -104,6 +162,9 @@ class MyApp extends StatelessWidget {
   }
 }
 
+//------------------------------------------
+//  Orignial Home-page (to be edited..)
+//-------------------------------------------
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
 

@@ -90,6 +90,19 @@ class _Body extends State<Body> {
     });
   }
 
+  @override
+  // ignore: must_call_super
+  void initState() {
+    //---
+    // Listen for text changes and update the object loginInfo
+    //---
+    ctrlMqttServer
+        .addListener(() => loginInfo.serverAddress = ctrlMqttServer.text);
+    ctrlUserName.addListener(() => loginInfo.userName = ctrlUserName.text);
+    ctrlUserPassword
+        .addListener(() => loginInfo.userPassword = ctrlUserPassword.text);
+  }
+
   //MqttLoginInfo loginInfo;
   bool _obscureText = true;
   @override
@@ -159,10 +172,8 @@ class _Body extends State<Body> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(50))),
               onPressed: () {
-                //Update and store the info
-                loginInfo.serverAddress = ctrlMqttServer.text;
-                loginInfo.userName = ctrlUserName.text;
-                loginInfo.userPassword = ctrlUserPassword.text;
+                loginInfo.saveToLocalStorage();
+                onLoginBtn!();
               },
               child: Text("LOGIN".toUpperCase()),
             )),
