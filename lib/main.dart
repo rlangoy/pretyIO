@@ -6,6 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:web_socket_channel/web_socket_channel.dart' as status;
+import 'dart:async';
+import 'package:mqtt_client/mqtt_browser_client.dart';
 
 class MqttLoginInfo {
   MqttLoginInfo();
@@ -66,7 +68,7 @@ class MqClient {
   MqClient(this._loginInfo);
 
   final MqttLoginInfo? _loginInfo;
-  MqttServerClient? client;
+  // MqttServerClient? client;
   //MqttBrowserClient? client;
 
   /// The subscribed callback
@@ -80,44 +82,62 @@ class MqClient {
   }
 
   Future<void> connect(BuildContext context) async {
-    client = MqttServerClient(_loginInfo!.serverAddress, '');
-    client!.secure = true; // Set secure working
-    client!.port = 8883; // SSL Port
+    try {
+      print("ddd");
+      //client = MqttServerClient(_loginInfo!.serverAddress, '');
+      //client = MqttServerClient(_loginInfo!.serverAddress, '');
 
-    client!.logging(on: false);
-    client!.keepAlivePeriod = 20;
-    client!.onDisconnected = onDisconnected;
-    client!.onSubscribed = onSubscribed;
+//      final client = MqttServerClient('broker.mqttdashboard.com', '');
+      final client = MqttBrowserClient('wss://broker.mqttdashboard.com/',
+          ''); //'ws://test.mosquitto.org', '');
 
-    if (client!.connectionStatus!.state == MqttConnectionState.connected) {
-      client!.disconnect();
+      print("aaaaaaaa");
+//      client!.secure = true; // Set secure working
+//      client!.port = 8883; // SSL Port
+      //client.port = 1883;
+      client.port = 8000;
+      client!.logging(on: false);
+      client!.keepAlivePeriod = 20;
+      client!.onDisconnected = onDisconnected;
+      client!.onSubscribed = onSubscribed;
+
+      if (client!.connectionStatus!.state == MqttConnectionState.connected) {
+        client!.disconnect();
+      }
+      String user = _loginInfo!.userName.toString();
+      print("Hei :::::::::::   $user");
+      final connMess = MqttConnectMessage()
+          .withClientIdentifier('Mqtt_MyClientUniqueIdQ1')
+          //.authenticateAs(_loginInfo!.userName, _loginInfo!.userPassword)
+          .withWillTopic(
+              'willtopic') // If you set this you must set a will message
+          .withWillMessage('My Will message')
+          .startClean() // Non persistent session for testing
+          .withWillQos(MqttQos.atLeastOnce);
+      print('EXAMPLE::Mosquitto client connecting....');
+      client!.connectionMessage = connMess;
+
+      await client!
+          .connect()
+          .then((value) =>
+              {print("---------------Connected----------------------")})
+          .onError((error, stackTrace) => {
+                //print("---------------Error Connecing----------------------")
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          NoConnectionScreen(msgHeader: 'Sorry!..')),
+                )
+              });
+    } catch (e) {
+      print(e);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => NoConnectionScreen(msgHeader: 'Sorry!..')),
+      );
     }
-    String user = _loginInfo!.userName.toString();
-    print("Hei :::::::::::   $user");
-    final connMess = MqttConnectMessage()
-        .withClientIdentifier('Mqtt_MyClientUniqueIdQ1')
-        .authenticateAs(_loginInfo!.userName, _loginInfo!.userPassword)
-        .withWillTopic(
-            'willtopic') // If you set this you must set a will message
-        .withWillMessage('My Will message')
-        .startClean() // Non persistent session for testing
-        .withWillQos(MqttQos.atLeastOnce);
-    print('EXAMPLE::Mosquitto client connecting....');
-    client!.connectionMessage = connMess;
-
-    await client!
-        .connect()
-        .then((value) =>
-            {print("---------------Connected----------------------")})
-        .onError((error, stackTrace) => {
-              //print("---------------Error Connecing----------------------")
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        NoConnectionScreen(msgHeader: 'Sorry!..')),
-              )
-            });
   }
 }
 
