@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:web_socket_channel/io.dart';
 import 'screens/errors/no_connection.dart';
 import 'screens/login/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:web_socket_channel/web_socket_channel.dart' as status;
 
 class MqttLoginInfo {
   MqttLoginInfo();
@@ -43,11 +45,29 @@ class MqttLoginInfo {
   }
 }
 
+class WebSocketTestcl {
+  void testme() async {
+    var channel =
+        IOWebSocketChannel.connect(Uri.parse('wss://echo.websocket.org'));
+    //IOWebSocketChannel.connect(Uri.parse('wss://127.0.0.1'));
+
+/*
+    channel.sink.add('Hei');
+
+    channel.stream.listen((message) {
+      print(message);
+      channel.sink.close();
+    });
+    */
+  }
+}
+
 class MqClient {
   MqClient(this._loginInfo);
 
   final MqttLoginInfo? _loginInfo;
   MqttServerClient? client;
+  //MqttBrowserClient? client;
 
   /// The subscribed callback
   void onSubscribed(String topic) {
@@ -59,7 +79,7 @@ class MqClient {
     print('EXAMPLE::OnDisconnected client callback - Client disconnection');
   }
 
-  Future<void> connect() async {
+  Future<void> connect(BuildContext context) async {
     client = MqttServerClient(_loginInfo!.serverAddress, '');
     client!.secure = true; // Set secure working
     client!.port = 8883; // SSL Port
@@ -89,8 +109,15 @@ class MqClient {
         .connect()
         .then((value) =>
             {print("---------------Connected----------------------")})
-        .onError((error, stackTrace) =>
-            {print("---------------Error Connecing----------------------")});
+        .onError((error, stackTrace) => {
+              //print("---------------Error Connecing----------------------")
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        NoConnectionScreen(msgHeader: 'Sorry!..')),
+              )
+            });
   }
 }
 
@@ -99,6 +126,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MqttLoginInfo loginInfo = MqttLoginInfo();
   runApp(MyApp(loginInfo: loginInfo));
+
+  // WebSocketTestcl cl = WebSocketTestcl();
+  //cl.testme();
 }
 
 // ignore: must_be_immutable
@@ -107,10 +137,10 @@ class MyApp extends StatelessWidget {
   MqttLoginInfo? loginInfo;
   MqClient? mqClient;
 
-  void onLoginBtn() {
+  void onLoginBtn(BuildContext context) {
     print("Login button pushed");
     mqClient = MqClient(loginInfo);
-    mqClient!.connect();
+    mqClient!.connect(context);
     // async mqClient.connect();
   }
 

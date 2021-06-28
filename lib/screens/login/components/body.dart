@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'background.dart';
 import 'package:flutter_svg/svg.dart';
+import '../../../screens/errors/no_connection.dart';
 
 //Rounded text field input
 class TextFieldContainer extends StatelessWidget {
@@ -172,8 +173,10 @@ class _Body extends State<Body> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(50))),
               onPressed: () {
+                //Store text input
                 loginInfo.saveToLocalStorage();
-                onLoginBtn!();
+                //Execute the connection magic :)
+                onLoginBtn!(context);
               },
               child: Text("LOGIN".toUpperCase()),
             )),

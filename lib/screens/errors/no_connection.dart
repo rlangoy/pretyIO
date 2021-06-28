@@ -37,7 +37,9 @@ class NoConnectionScreen extends StatelessWidget {
                   primary: Colors.black,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(50))),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pop(context); // Return to previous page
+              },
               child: Text("  Retry  ".toUpperCase()),
             ),
           )
