@@ -63,9 +63,12 @@ class MqClient {
   }
 
   Future<void> connect(BuildContext context) async {
+    // Dafault show connection error page
+    Widget nextPage = NoConnectionScreen(msgHeader: 'Sorry!..');
     try {
       print("ddd");
-      client = mqttsetup.setup(_loginInfo!.serverAddress, 'My#un1que1D', 0);
+      client =
+          mqttsetup.setup(_loginInfo!.serverAddress + "a", 'My#un1que1D', 0);
 
       print("aaaaaaaa");
       client!.logging(on: false);
@@ -92,28 +95,22 @@ class MqClient {
       await client!
           .connect()
           .then((value) =>
-              {print("---------------Connected----------------------")})
+              {print("---------------Connection ok ----------------------")})
           .onError((error, stackTrace) => {
                 print("---------------Error Connecing----------------------"),
-                print(error),
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      //  builder: (context) =>
-                      //      NoConnectionScreen(msgHeader: 'Sorry!..')),
-                      builder: (context) =>
-                          UnAuthorized(msgHeader: 'Sorry!..')),
-                )
+                //print(client!.connectionStatus),
+                if (client!.connectionStatus!.returnCode ==
+                    MqttConnectReturnCode.notAuthorized)
+                  {
+                    print("Wrong User name/password"),
+                    nextPage = UnAuthorized(msgHeader: 'Sorry!..'),
+                  },
+                //print(client!.connectionStatus!.returnCode),
               });
     } catch (e) {
       print(e);
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => NoConnectionScreen(msgHeader: 'Sorry!..')),
-        //builder: (context) => UnAuthorized(msgHeader: 'Sorry!..')),
-      );
     }
+    Navigator.push(context, MaterialPageRoute(builder: (context) => nextPage));
   }
 }
 
@@ -156,6 +153,7 @@ class MyApp extends StatelessWidget {
       //ConfigServerScreen
       //home: ConfigServerScreen(loginInfo: loginInfo, onLoginBtn: onLoginBtn),
       //home: const NoConnectionScreen(msgHeader: 'Sorry!..'),
+      //home: UnAuthorized(msgHeader: 'Access Denied'),
       home: LoginScreen(loginInfo: loginInfo, onLoginBtn: onLoginBtn),
       //const MyHomePage(title: 'Flutter Demo Home Page'),
     );

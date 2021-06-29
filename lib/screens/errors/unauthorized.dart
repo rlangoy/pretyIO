@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 class UnAuthorized extends StatelessWidget {
   const UnAuthorized(
       {Key? key,
-      this.message = "Something went wrong\nPlease try again",
+      this.message = "Invalid Username \nor password",
       this.msgHeader = "Opps!"})
       : super(key: key);
   final String msgHeader;
@@ -12,6 +12,7 @@ class UnAuthorized extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xff5b4ac5),
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -23,7 +24,7 @@ class UnAuthorized extends StatelessWidget {
               bottom: 170,
               left: 30,
               child: Text(msgHeader,
-                  style: const TextStyle(fontSize: 48.0, color: Colors.black))),
+                  style: const TextStyle(fontSize: 44.0, color: Colors.black))),
           Positioned(
               bottom: 110,
               left: 30,
