@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'screens/config_server/config_server_screen.dart';
 import 'screens/errors/no_connection.dart';
 import 'screens/login/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -149,6 +149,8 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
+      //ConfigServerScreen
+      //home: ConfigServerScreen(loginInfo: loginInfo, onLoginBtn: onLoginBtn),
       //home: const NoConnectionScreen(msgHeader: 'Sorry!..'),
       home: LoginScreen(loginInfo: loginInfo, onLoginBtn: onLoginBtn),
       //const MyHomePage(title: 'Flutter Demo Home Page'),

@@ -79,7 +79,7 @@ class _Body extends State<Body> {
 
   _Body({this.loginInfo, this.onLoginBtn}) {
     //Get data from storage and update UX when loaded
-    loginInfo.loadFromLocalStorage().then((_) {
+    /*   loginInfo.loadFromLocalStorage().then((_) {
       ctrlMqttServer.text = loginInfo.serverAddress;
       ctrlUserName.text = loginInfo.userName;
       ctrlUserPassword.text = loginInfo.userPassword;
@@ -89,6 +89,7 @@ class _Body extends State<Body> {
       ctrlUserName.text = "";
       ctrlUserPassword.text = "";
     });
+    */
   }
 
   @override
@@ -115,16 +116,16 @@ class _Body extends State<Body> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              "LOGIN",
+              "Server Configuration",
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: size.height * 0.03),
             SvgPicture.asset(
-              "assets/icons/login.svg",
+              "assets/icons/config_server.svg",
               height: size.height * 0.35,
             ),
             SizedBox(height: size.height * 0.03),
-/*            TextFieldContainer(
+            TextFieldContainer(
                 child: TextField(
               controller: ctrlMqttServer,
               decoration: InputDecoration(
@@ -134,14 +135,13 @@ class _Body extends State<Body> {
                 // fillColor: Colors.white70
               ),
             )),
-*/
             TextFieldContainer(
                 child: TextField(
               controller: ctrlUserName,
               decoration: InputDecoration(
                   icon: const Icon(Icons.person),
                   hintStyle: TextStyle(color: Colors.grey[800]),
-                  hintText: "User name",
+                  hintText: "MQTT Over SSL",
                   fillColor: Colors.white70),
             )),
             TextFieldContainer(
@@ -149,20 +149,9 @@ class _Body extends State<Body> {
               obscureText: _obscureText,
               controller: ctrlUserPassword,
               decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureText ? Icons.visibility : Icons.visibility_off,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _obscureText = !_obscureText;
-                      });
-                    }, //_togglePasswordStatus,
-                    color: Colors.grey[800],
-                  ),
-                  icon: const Icon(Icons.lock),
+                  icon: const Icon(Icons.portrait),
                   hintStyle: TextStyle(color: Colors.grey[800]),
-                  hintText: "Password",
+                  hintText: "Port number",
                   fillColor: Colors.white70),
             )),
 
