@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/config_server/config_server_screen.dart';
 import 'screens/errors/no_connection.dart';
+import 'screens/errors/unauthorized.dart';
 import 'screens/login/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mqtt_client/mqtt_client.dart';
@@ -98,8 +99,10 @@ class MqClient {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
+                      //  builder: (context) =>
+                      //      NoConnectionScreen(msgHeader: 'Sorry!..')),
                       builder: (context) =>
-                          NoConnectionScreen(msgHeader: 'Sorry!..')),
+                          UnAuthorized(msgHeader: 'Sorry!..')),
                 )
               });
     } catch (e) {
@@ -108,6 +111,7 @@ class MqClient {
         context,
         MaterialPageRoute(
             builder: (context) => NoConnectionScreen(msgHeader: 'Sorry!..')),
+        //builder: (context) => UnAuthorized(msgHeader: 'Sorry!..')),
       );
     }
   }
