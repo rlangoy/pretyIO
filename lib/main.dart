@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:web_socket_channel/io.dart';
+
 import 'screens/errors/no_connection.dart';
 import 'screens/login/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mqtt_client/mqtt_client.dart';
-import 'package:mqtt_client/mqtt_server_client.dart';
-import 'package:web_socket_channel/web_socket_channel.dart' as status;
 import 'dart:async';
-import 'package:mqtt_client/mqtt_browser_client.dart';
+import 'server.dart' if (dart.library.html) 'browser.dart' as mqttsetup;
 
 class MqttLoginInfo {
   MqttLoginInfo();
@@ -47,29 +45,11 @@ class MqttLoginInfo {
   }
 }
 
-class WebSocketTestcl {
-  void testme() async {
-    var channel =
-        IOWebSocketChannel.connect(Uri.parse('wss://echo.websocket.org'));
-    //IOWebSocketChannel.connect(Uri.parse('wss://127.0.0.1'));
-
-/*
-    channel.sink.add('Hei');
-
-    channel.stream.listen((message) {
-      print(message);
-      channel.sink.close();
-    });
-    */
-  }
-}
-
 class MqClient {
   MqClient(this._loginInfo);
 
   final MqttLoginInfo? _loginInfo;
-  // MqttServerClient? client;
-  //MqttBrowserClient? client;
+  MqttClient? client;
 
   /// The subscribed callback
   void onSubscribed(String topic) {
@@ -84,18 +64,9 @@ class MqClient {
   Future<void> connect(BuildContext context) async {
     try {
       print("ddd");
-      //client = MqttServerClient(_loginInfo!.serverAddress, '');
-      //client = MqttServerClient(_loginInfo!.serverAddress, '');
-
-//      final client = MqttServerClient('broker.mqttdashboard.com', '');
-      final client = MqttBrowserClient('wss://broker.mqttdashboard.com/',
-          ''); //'ws://test.mosquitto.org', '');
+      client = mqttsetup.setup(_loginInfo!.serverAddress, 'My#un1que1D', 0);
 
       print("aaaaaaaa");
-//      client!.secure = true; // Set secure working
-//      client!.port = 8883; // SSL Port
-      //client.port = 1883;
-      client.port = 8000;
       client!.logging(on: false);
       client!.keepAlivePeriod = 20;
       client!.onDisconnected = onDisconnected;
@@ -108,7 +79,7 @@ class MqClient {
       print("Hei :::::::::::   $user");
       final connMess = MqttConnectMessage()
           .withClientIdentifier('Mqtt_MyClientUniqueIdQ1')
-          //.authenticateAs(_loginInfo!.userName, _loginInfo!.userPassword)
+          .authenticateAs(_loginInfo!.userName, _loginInfo!.userPassword)
           .withWillTopic(
               'willtopic') // If you set this you must set a will message
           .withWillMessage('My Will message')
@@ -122,7 +93,8 @@ class MqClient {
           .then((value) =>
               {print("---------------Connected----------------------")})
           .onError((error, stackTrace) => {
-                //print("---------------Error Connecing----------------------")
+                print("---------------Error Connecing----------------------"),
+                print(error),
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -146,9 +118,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MqttLoginInfo loginInfo = MqttLoginInfo();
   runApp(MyApp(loginInfo: loginInfo));
-
-  // WebSocketTestcl cl = WebSocketTestcl();
-  //cl.testme();
 }
 
 // ignore: must_be_immutable
@@ -161,7 +130,6 @@ class MyApp extends StatelessWidget {
     print("Login button pushed");
     mqClient = MqClient(loginInfo);
     mqClient!.connect(context);
-    // async mqClient.connect();
   }
 
   // This widget is the root of your application.
