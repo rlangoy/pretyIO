@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'screens/config_server/config_server_screen.dart';
 import 'screens/errors/no_connection.dart';
@@ -11,7 +13,9 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 
 class MqttLoginInfo {
   MqttLoginInfo() {
-    if (kIsWeb) bool useWebSockets = true;
+    if (kIsWeb) {
+      useWebSockets = true;
+    }
   }
 
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
@@ -19,9 +23,14 @@ class MqttLoginInfo {
   //Loads data from storage
   Future<void> loadFromLocalStorage() async {
     final SharedPreferences prefs = await _prefs;
-    serverAddress = (prefs.getString('serverAddress') ?? "");
+/*    serverAddress = (prefs.getString('serverAddress') ?? "");
     userName = (prefs.getString('userName') ?? "");
     userPassword = (prefs.getString('userPassword') ?? "");
+*/
+    print("DEBUG !!! Remove This!!");
+    serverAddress = "ub.langoy.in";
+    userName = "usn";
+    userPassword = "student2021";
   }
 
   //Saves data in local storage
@@ -67,12 +76,48 @@ class MqClient {
     print('EXAMPLE::OnDisconnected client callback - Client disconnection');
   }
 
+  // new MQTT Messages is recieved
+  void onMqttMessage(List<MqttReceivedMessage<MqttMessage>> messages) {
+    for (var msg in messages) {
+      final recMess = msg.payload as MqttPublishMessage;
+      final pt = utf8.decode(recMess.payload.message!);
+      print(
+          'EXAMPLE::Change notification:: topic is <${msg.topic}>, payload is <-- $pt -->');
+    }
+  }
+
+  /// Pong callback
+  void pong() {
+    print('EXAMPLE::Ping response client callback invoked');
+  }
+
+  void subscribe(String topic) {
+    // Subscribe to ...
+    print('EXAMPLE::Subscribing to :  $topic');
+    //const topic = 'home/office/temperature/luftintak'; // Not a wildcard topic
+    client!.subscribe(topic, MqttQos.atMostOnce);
+
+    // Start listening for subscribed messages"
+    client!.updates!.listen((List<MqttReceivedMessage<MqttMessage>> msg) {
+      onMqttMessage(msg);
+    }); // end listen
+  }
+
   Future<void> connect(BuildContext context) async {
     // Dafault show connection error page
     Widget nextPage = NoConnectionScreen(msgHeader: 'Sorry!..');
     try {
       print("ddd");
-      client = mqttsetup.setup(_loginInfo!.serverAddress, 'My#un1que1D', 0);
+
+      //serverURI = 'wss://ub.langoy.in';
+      //serverURI = _loginInfo!.serverAddress;
+      client = mqttsetup.setup(
+          _loginInfo!.serverAddress, 'My#un1que1Da', _loginInfo!.useSSL);
+      //client!.server = serverURI;
+      //client!.port = 8811;
+
+      print("User          :   ${_loginInfo!.userName} ");
+      print("Connecting to :  ${client!.server}");
 
       client!.logging(on: false);
       client!.keepAlivePeriod = 20;
@@ -82,9 +127,7 @@ class MqClient {
       if (client!.connectionStatus!.state == MqttConnectionState.connected) {
         client!.disconnect();
       }
-      String user = _loginInfo!.userName.toString();
-      print("User             :   ${_loginInfo!.userName} ");
-      print("Connecting to :  ${_loginInfo!.serverAddress}");
+      client!.pongCallback = pong;
 
       final connMess = MqttConnectMessage()
           .withClientIdentifier('Mqtt_MyClientUniqueIdQ1')
@@ -99,8 +142,10 @@ class MqClient {
 
       await client!
           .connect()
-          .then((value) =>
-              {print("---------------Connection ok ----------------------")})
+          .then((value) => {
+                print("---------------Connection ok ----------------------"),
+                subscribe('home/office/temperature/luftintak'),
+              })
           .onError((error, stackTrace) => {
                 print("---------------Error Connecing----------------------"),
                 //print(client!.connectionStatus),
@@ -115,6 +160,7 @@ class MqClient {
     } catch (e) {
       print(e);
     }
+
     Navigator.push(context, MaterialPageRoute(builder: (context) => nextPage));
   }
 }
