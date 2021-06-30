@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'background.dart';
 import 'package:flutter_svg/svg.dart';
 import '../../../screens/errors/no_connection.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 //Rounded text field input
 class TextFieldContainer extends StatelessWidget {
@@ -109,8 +110,8 @@ class _Body extends State<Body> {
   }
 
   //MqttLoginInfo loginInfo;
-  bool _SSLchecked = false;
-  bool _WebsocketsChecked = true;
+  bool _SSLchecked = true;
+  bool _WebsocketsChecked = kIsWeb == true ? true : false;
   Icon _iconSSL = Icon(Icons.lock_open);
   SvgPicture _iconWebSocket = SvgPicture.asset("assets/icons/websocket.svg",
       width: 25, color: Colors.black38);
@@ -187,17 +188,20 @@ class _Body extends State<Body> {
 
             SwitchListTile(
               value: _WebsocketsChecked,
-              onChanged: (value) {
-                setState(() {
-                  _WebsocketsChecked = value;
-                  _iconWebSocket = SvgPicture.asset(
-                      "assets/icons/websocket.svg",
-                      width: 25,
-                      color: _WebsocketsChecked == true
-                          ? Colors.purple.shade800
-                          : Colors.black38);
-                });
-              },
+              //Disable slider if web-platform (accept only sweb scoekts)
+              onChanged: kIsWeb == true
+                  ? null
+                  : (value) {
+                      setState(() {
+                        _WebsocketsChecked = value;
+                        _iconWebSocket = SvgPicture.asset(
+                            "assets/icons/websocket.svg",
+                            width: 25,
+                            color: _WebsocketsChecked == true
+                                ? Colors.purple.shade800
+                                : Colors.black38);
+                      });
+                    },
               activeTrackColor: Colors.purple.shade800,
               activeColor: Colors.orangeAccent,
               title: const Text('WebSockets'),

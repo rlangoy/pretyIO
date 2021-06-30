@@ -7,9 +7,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'dart:async';
 import 'server.dart' if (dart.library.html) 'browser.dart' as mqttsetup;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class MqttLoginInfo {
-  MqttLoginInfo();
+  MqttLoginInfo() {
+    if (kIsWeb) bool useWebSockets = true;
+  }
 
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
@@ -32,6 +35,8 @@ class MqttLoginInfo {
   String serverAddress = "";
   String userName = "";
   String userPassword = "";
+  bool useSSL = true;
+  bool useWebSockets = false;
 
   bool get isEmpty {
     bool ret = false;
