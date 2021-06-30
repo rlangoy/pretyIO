@@ -72,10 +72,8 @@ class MqClient {
     Widget nextPage = NoConnectionScreen(msgHeader: 'Sorry!..');
     try {
       print("ddd");
-      client =
-          mqttsetup.setup(_loginInfo!.serverAddress + "a", 'My#un1que1D', 0);
+      client = mqttsetup.setup(_loginInfo!.serverAddress, 'My#un1que1D', 0);
 
-      print("aaaaaaaa");
       client!.logging(on: false);
       client!.keepAlivePeriod = 20;
       client!.onDisconnected = onDisconnected;
@@ -85,7 +83,9 @@ class MqClient {
         client!.disconnect();
       }
       String user = _loginInfo!.userName.toString();
-      print("Hei :::::::::::   $user");
+      print("User             :   ${_loginInfo!.userName} ");
+      print("Connecting to :  ${_loginInfo!.serverAddress}");
+
       final connMess = MqttConnectMessage()
           .withClientIdentifier('Mqtt_MyClientUniqueIdQ1')
           .authenticateAs(_loginInfo!.userName, _loginInfo!.userPassword)
@@ -156,10 +156,10 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       //ConfigServerScreen
-      home: ConfigServerScreen(loginInfo: loginInfo, onLoginBtn: onLoginBtn),
+      //home: ConfigServerScreen(loginInfo: loginInfo, onLoginBtn: onLoginBtn),
       //home: const NoConnectionScreen(msgHeader: 'Sorry!..'),
       //home: UnAuthorized(msgHeader: 'Access Denied'),
-      //home: LoginScreen(loginInfo: loginInfo, onLoginBtn: onLoginBtn),
+      home: LoginScreen(loginInfo: loginInfo, onLoginBtn: onLoginBtn),
       //const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }

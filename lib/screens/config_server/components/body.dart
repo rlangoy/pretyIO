@@ -115,10 +115,6 @@ class _Body extends State<Body> {
   Icon _iconSSL = Icon(Icons.lock_open);
   SvgPicture _iconWebSocket = SvgPicture.asset("assets/icons/websocket.svg",
       width: 25, color: Colors.black38);
-/*
-  SvgPicture _iconTcpPort = SvgPicture.asset("assets/icons/tcp_port.svg",
-      width: 25, color: Colors.black38);
-*/
 
   @override
   Widget build(BuildContext context) {
