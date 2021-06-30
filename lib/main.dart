@@ -151,10 +151,10 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       //ConfigServerScreen
-      //home: ConfigServerScreen(loginInfo: loginInfo, onLoginBtn: onLoginBtn),
+      home: ConfigServerScreen(loginInfo: loginInfo, onLoginBtn: onLoginBtn),
       //home: const NoConnectionScreen(msgHeader: 'Sorry!..'),
       //home: UnAuthorized(msgHeader: 'Access Denied'),
-      home: LoginScreen(loginInfo: loginInfo, onLoginBtn: onLoginBtn),
+      //home: LoginScreen(loginInfo: loginInfo, onLoginBtn: onLoginBtn),
       //const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }

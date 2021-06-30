@@ -74,22 +74,15 @@ class _Body extends State<Body> {
   Function? onLoginBtn;
 
   TextEditingController ctrlMqttServer = TextEditingController();
-  TextEditingController ctrlUserName = TextEditingController();
-  TextEditingController ctrlUserPassword = TextEditingController();
 
   _Body({this.loginInfo, this.onLoginBtn}) {
     //Get data from storage and update UX when loaded
-    /*   loginInfo.loadFromLocalStorage().then((_) {
+    loginInfo.loadFromLocalStorage().then((_) {
       ctrlMqttServer.text = loginInfo.serverAddress;
-      ctrlUserName.text = loginInfo.userName;
-      ctrlUserPassword.text = loginInfo.userPassword;
     }).catchError((e) {
       //No data found in storage
       ctrlMqttServer.text = "";
-      ctrlUserName.text = "";
-      ctrlUserPassword.text = "";
     });
-    */
   }
 
   @override
@@ -100,13 +93,32 @@ class _Body extends State<Body> {
     //---
     ctrlMqttServer
         .addListener(() => loginInfo.serverAddress = ctrlMqttServer.text);
-    ctrlUserName.addListener(() => loginInfo.userName = ctrlUserName.text);
-    ctrlUserPassword
-        .addListener(() => loginInfo.userPassword = ctrlUserPassword.text);
+
+    //Icon _iconSSL = Icon(Icons.lock_open);
+    _iconWebSocket = SvgPicture.asset("assets/icons/websocket.svg",
+        width: 25,
+        color: _WebsocketsChecked == true
+            ? Colors.purple.shade800
+            : Colors.black38);
+
+    if (_SSLchecked) {
+      _iconSSL = Icon(Icons.lock_rounded, color: Colors.purple.shade800);
+    } else {
+      _iconSSL = Icon(Icons.lock_open_rounded);
+    }
   }
 
   //MqttLoginInfo loginInfo;
-  bool _obscureText = true;
+  bool _SSLchecked = false;
+  bool _WebsocketsChecked = true;
+  Icon _iconSSL = Icon(Icons.lock_open);
+  SvgPicture _iconWebSocket = SvgPicture.asset("assets/icons/websocket.svg",
+      width: 25, color: Colors.black38);
+/*
+  SvgPicture _iconTcpPort = SvgPicture.asset("assets/icons/tcp_port.svg",
+      width: 25, color: Colors.black38);
+*/
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -132,28 +144,65 @@ class _Body extends State<Body> {
                 icon: const Icon(Icons.link_rounded),
                 hintStyle: TextStyle(color: Colors.grey[800]),
                 hintText: "MQTT Server Address",
-                // fillColor: Colors.white70
               ),
             )),
             TextFieldContainer(
                 child: TextField(
-              controller: ctrlUserName,
               decoration: InputDecoration(
-                  icon: const Icon(Icons.person),
-                  hintStyle: TextStyle(color: Colors.grey[800]),
-                  hintText: "MQTT Over SSL",
-                  fillColor: Colors.white70),
-            )),
-            TextFieldContainer(
-                child: TextField(
-              obscureText: _obscureText,
-              controller: ctrlUserPassword,
-              decoration: InputDecoration(
-                  icon: const Icon(Icons.portrait),
+                  icon: //const Icon(Icons.portrait),
+                      SvgPicture.asset("assets/icons/tcp_port.svg",
+                          width: 25, color: Colors.black38),
                   hintStyle: TextStyle(color: Colors.grey[800]),
                   hintText: "Port number",
                   fillColor: Colors.white70),
             )),
+
+            Container(
+              child: SwitchListTile(
+                value: _SSLchecked,
+                onChanged: (value) {
+                  setState(() {
+                    _SSLchecked = value;
+                    if (value == true) {
+                      _iconSSL = Icon(Icons.lock_rounded,
+                          color: Colors.purple.shade800);
+                    } else {
+                      _iconSSL = Icon(Icons.lock_open_rounded);
+                    }
+                  });
+                },
+                activeTrackColor: Colors.purple.shade800,
+                activeColor: Colors.orangeAccent,
+                title: const Text('SSL'),
+                secondary: _iconSSL,
+              ),
+              decoration: BoxDecoration(
+                  border: Border.all(
+                color: Colors.black,
+                width: 8,
+              )
+                  // color: Colors.pink,
+                  ),
+            ),
+
+            SwitchListTile(
+              value: _WebsocketsChecked,
+              onChanged: (value) {
+                setState(() {
+                  _WebsocketsChecked = value;
+                  _iconWebSocket = SvgPicture.asset(
+                      "assets/icons/websocket.svg",
+                      width: 25,
+                      color: _WebsocketsChecked == true
+                          ? Colors.purple.shade800
+                          : Colors.black38);
+                });
+              },
+              activeTrackColor: Colors.purple.shade800,
+              activeColor: Colors.orangeAccent,
+              title: const Text('WebSockets'),
+              secondary: _iconWebSocket,
+            ),
 
             const SizedBox(height: 20), // Add Space
             ButtonFieldContainer(
