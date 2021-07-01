@@ -16,6 +16,13 @@ class _MqttMessageList extends State<MqttMessageList> {
   _MqttMessageList({List<ListItem>? items}) {
     this.items = items;
   }
+  @override
+  void initState() {
+    //Add heading
+    items!.add(HeadingItem("HeadingItem: Hei"));
+    items!.add(
+        MessageItem("MessageItem.Sender: Me", "MessageItem.body: Så Hyggelig"));
+  }
 
   @override
   Widget build(BuildContext context) {

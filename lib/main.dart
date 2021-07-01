@@ -184,7 +184,7 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   MyApp({Key? key, this.loginInfo}) : super(key: key) {
     _lstItems = List<ListItem>.generate(
-      1000,
+      2,
       (i) => i % 6 == 0
           ? HeadingItem('Heading $i')
           : MessageItem('Sender $i', 'Message body $i'),
