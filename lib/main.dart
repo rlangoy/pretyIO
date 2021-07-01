@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'screens/config_server/config_server_screen.dart';
 import 'screens/errors/no_connection.dart';
@@ -76,6 +76,10 @@ class MqClient {
     print('EXAMPLE::OnDisconnected client callback - Client disconnection');
   }
 
+//List of Topics and theis message lists
+  Map<String, List<String>> _mqttMessageList =
+      new HashMap<String, List<String>>();
+
   // new MQTT Messages is recieved
   void onMqttMessage(List<MqttReceivedMessage<MqttMessage>> messages) {
     for (var msg in messages) {
@@ -83,6 +87,13 @@ class MqClient {
       final pt = utf8.decode(recMess.payload.message!);
       print(
           'EXAMPLE::Change notification:: topic is <${msg.topic}>, payload is <-- $pt -->');
+
+      //Store the new message
+      //   If topic does not exist i list then create is
+      //   get list connected to topic and add the new message/payload
+      List<String> msgs4topic =
+          _mqttMessageList.putIfAbsent(msg.topic, () => []);
+      msgs4topic.add(pt);
     }
   }
 
@@ -109,12 +120,8 @@ class MqClient {
     try {
       print("ddd");
 
-      //serverURI = 'wss://ub.langoy.in';
-      //serverURI = _loginInfo!.serverAddress;
       client = mqttsetup.setup(
           _loginInfo!.serverAddress, 'My#un1que1Da', _loginInfo!.useSSL);
-      //client!.server = serverURI;
-      //client!.port = 8811;
 
       print("User          :   ${_loginInfo!.userName} ");
       print("Connecting to :  ${client!.server}");
