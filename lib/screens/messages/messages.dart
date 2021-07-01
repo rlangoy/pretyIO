@@ -20,8 +20,8 @@ class _MqttMessageList extends State<MqttMessageList> {
   void initState() {
     //Add heading
     items!.add(HeadingItem("HeadingItem: Hei"));
-    items!.add(
-        MessageItem("MessageItem.Sender: Me", "MessageItem.body: Så Hyggelig"));
+    items!.add(MessageItem(
+        "MessageItem.Sender: Me", "MessageItem.body : Så Hyggelig"));
   }
 
   @override
