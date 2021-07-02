@@ -40,7 +40,7 @@ class _MqttMessageList extends State<MqttMessageList> {
 
   @override
   Widget build(BuildContext context) {
-    final title = 'Mixed List';
+    final title = 'MQTT Messages';
 
     return MaterialApp(
       title: title,
@@ -52,12 +52,28 @@ class _MqttMessageList extends State<MqttMessageList> {
             padding: const EdgeInsets.all(8),
             itemCount: topics.length,
             itemBuilder: (BuildContext context, int index) {
-//----------------Bygg Egen gui her :)--------------------------------
+//----------------List View UI:)--------------------------------
               return Container(
-                height: 50,
-                color: Colors.amber[100],
-                child: Center(child: Text('Entry ${topics[index]}')),
-              );
+                  height: 50,
+                  color: Colors.amber[100],
+                  child: Stack(children: <Widget>[
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      child: Text(
+                        'Topic ${topics[index]}',
+                      ),
+                    ),
+                    Positioned(
+                      top: 20,
+                      left: 20,
+                      child: Text(
+                        'Payload ${latestTopicsPayloads[index]}',
+                      ),
+                    ),
+                  ]
+                      //Center(child: Text('Entry ${topics[index]}')),)
+                      ));
 //------------------------------------------------
             },
             separatorBuilder: (BuildContext context, int index) =>

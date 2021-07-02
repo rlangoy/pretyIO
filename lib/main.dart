@@ -164,7 +164,8 @@ class MqClient {
           .connect()
           .then((value) => {
                 print("---------------Connection ok ----------------------"),
-                subscribe('home/office/temperature/luftintak'),
+                //subscribe('home/office/temperature/luftintak'),
+                subscribe('home/#'),
                 nextPage = MqttMessageList(mqClient: this),
               })
           .onError((error, stackTrace) => {
