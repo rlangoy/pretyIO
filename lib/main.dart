@@ -64,6 +64,12 @@ class MqttLoginInfo {
 class MqClient {
   MqClient(this._loginInfo);
 
+  //  Stream controller for "get statusUpdate ""
+  final _streamCtrMqttStatusUpdate = StreamController<String>();
+
+  //  Sends updates to listeners wen new data in inserted
+  Stream<String> get statusUpdate => _streamCtrMqttStatusUpdate.stream;
+
   final MqttLoginInfo? _loginInfo;
   MqttClient? client;
 
@@ -75,6 +81,10 @@ class MqClient {
   /// The unsolicited disconnect callback
   void onDisconnected() {
     print('EXAMPLE::OnDisconnected client callback - Client disconnection');
+  }
+
+  Map<String, List<String>> get mqttMessageList {
+    return _mqttMessageList;
   }
 
 //List of Topics and theis message lists
@@ -95,6 +105,8 @@ class MqClient {
       List<String> msgs4topic =
           _mqttMessageList.putIfAbsent(msg.topic, () => []);
       msgs4topic.add(pt);
+
+      _streamCtrMqttStatusUpdate.sink.add("NewData");
     }
   }
 
@@ -153,6 +165,7 @@ class MqClient {
           .then((value) => {
                 print("---------------Connection ok ----------------------"),
                 subscribe('home/office/temperature/luftintak'),
+                nextPage = MqttMessageList(mqClient: this),
               })
           .onError((error, stackTrace) => {
                 print("---------------Error Connecing----------------------"),
@@ -182,14 +195,7 @@ Future<void> main() async {
 
 // ignore: must_be_immutable
 class MyApp extends StatelessWidget {
-  MyApp({Key? key, this.loginInfo}) : super(key: key) {
-    _lstItems = List<ListItem>.generate(
-      2,
-      (i) => i % 6 == 0
-          ? HeadingItem('Heading $i')
-          : MessageItem('Sender $i', 'Message body $i'),
-    );
-  }
+  MyApp({Key? key, this.loginInfo}) : super(key: key) {}
   MqttLoginInfo? loginInfo;
   MqClient? mqClient;
 
@@ -199,32 +205,31 @@ class MyApp extends StatelessWidget {
     mqClient!.connect(context);
   }
 
-  List<ListItem>? _lstItems;
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          // This is the theme of your application.
-          //
-          // Try running your application with "flutter run". You'll see the
-          // application has a blue toolbar. Then, without quitting the app, try
-          // changing the primarySwatch below to Colors.green and then invoke
-          // "hot reload" (press "r" in the console where you ran "flutter run",
-          // or simply save your changes to "hot reload" in a Flutter IDE).
-          // Notice that the counter didn't reset back to zero; the application
-          // is not restarted.
-          primarySwatch: Colors.blue,
-        ),
-        //ConfigServerScreen
-        //home: ConfigServerScreen(loginInfo: loginInfo, onLoginBtn: onLoginBtn),
-        //home: const NoConnectionScreen(msgHeader: 'Sorry!..'),
-        //home: UnAuthorized(msgHeader: 'Access Denied'),
-        home: MqttMessageList(items: _lstItems!)
-        //home: LoginScreen(loginInfo: loginInfo, onLoginBtn: onLoginBtn),
-        //const MyHomePage(title: 'Flutter Demo Home Page'),
-        );
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        // This is the theme of your application.
+        //
+        // Try running your application with "flutter run". You'll see the
+        // application has a blue toolbar. Then, without quitting the app, try
+        // changing the primarySwatch below to Colors.green and then invoke
+        // "hot reload" (press "r" in the console where you ran "flutter run",
+        // or simply save your changes to "hot reload" in a Flutter IDE).
+        // Notice that the counter didn't reset back to zero; the application
+        // is not restarted.
+        primarySwatch: Colors.blue,
+      ),
+      //ConfigServerScreen
+      //home: ConfigServerScreen(loginInfo: loginInfo, onLoginBtn: onLoginBtn),
+      //home: const NoConnectionScreen(msgHeader: 'Sorry!..'),
+      //home: UnAuthorized(msgHeader: 'Access Denied'),
+      //home: MqttMessageList(mqClient: mqClient!)
+      home: LoginScreen(loginInfo: loginInfo, onLoginBtn: onLoginBtn),
+      //const MyHomePage(title: 'Flutter Demo Home Page'),
+    );
   }
 }
 
